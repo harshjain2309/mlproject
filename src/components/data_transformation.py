@@ -40,6 +40,7 @@ class DataTransformation:
             num_pipeline=Pipeline(steps=[
                 ("imputer",SimpleImputer(strategy='median')),
                 ('scalar',StandardScaler())
+
             ])
             cat_pipeline=Pipeline(steps=[
             ("imputer",SimpleImputer(strategy="most_frequent")),
@@ -106,9 +107,28 @@ class DataTransformation:
             )
 
             return (
+
                 train_arr,
                 test_arr,
                 self.data_transformation_config.preprocessor_obj_file_path
             )
+
         except Exception as e:
             raise CustomException(sys,e)
+        
+
+
+if __name__ == "__main__":
+    from src.components.data_ingestion import DataIngestion
+
+    # Run Data Ingestion first
+    ingestion = DataIngestion()
+    train_path, test_path = ingestion.initiate_data_ingestion()
+
+    # Then run Data Transformation
+    transformation = DataTransformation()
+    train_arr, test_arr, preprocessor_path = transformation.initiate_data_transformation(train_path, test_path)
+
+    print("Train array shape:", train_arr.shape)
+    print("Test array shape:", test_arr.shape)
+    print("Preprocessor saved at:", preprocessor_path)
